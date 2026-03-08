@@ -66,6 +66,8 @@ NON              { printf("NON"); }
 "|"              { printf("PIPE\n"); }
 "("              { printf("PARENTHESE_OUV\n"); }
 ")"              { printf("PARENTHESE_FER\n"); }
+"["              { printf("CROCHET_OUV\n"); }
+"]"              { printf("CROCHET_FER\n"); }
 "{"              { printf("ACCOLADE_OUV\n"); }
 "}"              { printf("ACCOLADE_FER\n"); }
 
