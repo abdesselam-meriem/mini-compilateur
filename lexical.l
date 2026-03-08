@@ -1,78 +1,86 @@
 %{
 #include<stdio.h>
-//#include "syntax.tab.h"
 int nb_ligne=1;
 int cpt_col=1;
 %}
 
-entier           [0-9]+
-reel             [0-9]+\.[0-9]+         
+lettre            [a-zA-Z]
+chiffre           [0-9]
+entier           {chiffre}+
+reel             {chiffre}+\.{chiffre}+ 
+CHAINE    \"[^\"]*\"        
 comnt_ligne "%%".* 
-IDF   [a-z]([a-z0-9]|_([a-z0-9])){0,12}[a-z0-9]
-CST_signe  \([+-][0-9]+(\.[0-9]+)?\)
+IDF   {lettre}({lettre}|{chiffre}|_({lettre}|{chiffre})){0,12}({lettre}|{chiffre})?
+CST_signe  [+-]{chiffre}+(\.{chiffre}+)?
 
 %%
 
-"BeginProject"     { return BEGINPROJECT; }
-"Setup"            { return SETUP; }
-"Run"              { return RUN; }
-"EndProject"       { return ENDPROJECT; }
-"define"           { return DEFINE; }
-"const"            { return CONST; }
+BeginProject     { printf("MC_BEGINPROJECT\n"); }
+Setup            { printf("MC_SETUP\n"); }
+Run              { printf("MC_RUN\n"); }
+EndProject       { printf("MC_ENDPROJECT\n"); }
+define           { printf("MC_DEFINE\n"); }
+const              { printf("MC_CONST\n"); }
+integer          { printf("INTEGER_TYPE\n"); }
+float            { printf("FLOAT_TYPE\n"); } 
 
-"integer"          { return INTEGER_TYPE; }
-"float"            { return FLOAT_TYPE; }
+if               { printf("IF\n"); }
+then             { printf("THEN\n"); }
+else             { printf("ELSE\n"); }
+endif            { printf("ENDIF\n"); }
+"loop while"      { printf("LOOP_WHILE\n"); }
+endloop          { printf("ENDLOOP\n"); }
+for              { printf("FOR\n"); }
+in               { printf("IN\n"); }
+to               { printf("TO\n"); }
+endfor           { printf("ENDFOR\n"); }
+input            { printf("INPUT\n"); }
+output           { printf("OUTPUT\n"); }
+AND              { printf("AND\n"); }
+OR               { printf("OR\n"); }
+NON              { printf("NON"); }
 
-"if"               { return IF; }
-"then"             { return THEN; }
-"else"             { return ELSE; }
-"endif"            { return ENDIF; }
-"loop while"       { return LOOP_WHILE; }
-"endloop"          { return ENDLOOP; }
-"for"              { return FOR; }
-"in"               { return IN; }
-"to"               { return TO; }
-"endfor"           { return ENDFOR; }
-"input"               { return INPUT; }
-"output"              { return OUTPUT; }
-"AND"              { return AND; }
-"OR"               { return OR; }
-"NON"              { return NON; }
-
-"←"              { return ASSIGN; }
-"+"              { return PLUS; }
-"-"              { return MINUS; }
-"*"              { return MULT; }
-"/"              { return DIV; }
-">"              { return GT; }
-"<"              { return LT; }
-">="             { return GE; }
-"<="             { return LE; }
-"=="             { return EQ; }
-"!="             { return NE; }
-
-";"              { return SEMICOLON; }
-":"              { return COLON; }
-","              { return COMMA; }
-"|"              { return PIPE; }
-"("              { return LPAREN; }
-")"              { return RPAREN; }
-"["              { return LBRACKET; }
-"]"              { return RBRACKET; }
-"{"              { return LBRACE; }
-"}"              { return RBRACE; }
-
-{entier}         { return INTEGER_CONST; }
-{reel}           { return FLOAT_CONST; }
-{CST_signe} { return SIGNED_CONST; }
-{IDF} { return IDENTIFIER; }
+{CHAINE}         { printf ("chaine %s \n",yytext) ;}
+{entier}         { printf ("entier %s \n",yytext) ;}
+{reel}           { printf ("reel %s \n",yytext) ;} 
+{CST_signe}      { printf ("constante signee %s \n",yytext) ;}
+{IDF}            { printf ("IDF est: %s \n",yytext) ;}
 {comnt_ligne}  { /* ignorer */ }
+
+"←"              { printf("OP_AFFECT \n"); }
+"="              { printf("initialisation\n"); }
+"+"              { printf("OP_ADD\n"); }
+"-"              { printf("OP_DIFF\n"); }
+"*"              { printf("OP_MUL\n"); }
+"/"              { printf("OP_DIV\n"); }
+">"              { printf("OP_COMP_SUP\n"); }
+"<"              { printf("OP_COMP_INF\n"); }
+">="             { printf("OP_COMP_SUP_EG\n"); }
+"<="             { printf("OP_COMP_INF_EG\n"); }
+"=="             { printf("OP_COMP_EQ\n"); }
+"!="             { printf("OP_COMP_NEQ\n"); }
+
+";"              { printf("PVG \n"); }
+":"              { printf("DEUX_POINTS\n"); }
+","              { printf("VIRGULE\n"); }
+"|"              { printf("PIPE\n"); }
+"("              { printf("PARENTHESE_OUV\n"); }
+")"              { printf("PARENTHESE_FER\n"); }
+"{"              { printf("ACCOLADE_OUV\n"); }
+"}"              { printf("ACCOLADE_FER\n"); }
+
 [ \t]+         { /* ignorer */ }
 \n               { nb_ligne++; cpt_col = 1; }
 
-.                { printf("Erreur lexicale: caractère '%c' non reconnu à la ligne %d, colonne %d\n",yytext[0], nb_ligne, cpt_col); }
+.                { printf(" Erreur lexicale: caractere '%c' non reconnu a la ligne %d\n",yytext[0], nb_ligne); }
 
 %%
+
+int main()
+{
+    yylex();
+    return 0;
+}
 
 int yywrap() {
     return 1;
