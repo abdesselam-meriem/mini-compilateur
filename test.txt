@@ -22,5 +22,6 @@ endif;
 loop while (c<10)
 { c ← c + 1;
 } endloop;
-
+output(b);
+output("good");
 EndProject;
